@@ -79,7 +79,7 @@ class AuthMiddleware {
         null,
       );
 
-    const isExpired = await User.isExpiredToken(
+    const isExpired = User.isExpiredToken(
       user?.password_changed_at,
       req.user.iat,
     );

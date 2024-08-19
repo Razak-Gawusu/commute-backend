@@ -2,6 +2,7 @@ import argon2 from 'argon2';
 import crypto from 'crypto';
 
 import { db } from '@/config';
+// import { ErrorController } from '@/controllers';
 import { IUser } from '@/interfaces';
 import { UserQueries } from '@/queries';
 
@@ -29,6 +30,8 @@ export class User implements IUser {
     const hash_password = await argon2.hash(this.password);
     return db.oneOrNone(UserQueries.createUser, [
       this.id,
+      this.first_name,
+      this.last_name,
       this.email,
       hash_password,
       this.role,
@@ -46,20 +49,42 @@ export class User implements IUser {
     return db.none(UserQueries.deleteUser, [email]);
   }
 
-  static async generateResetToken(email: string) {
-    const resetToken = crypto.randomBytes(4).toString('hex');
-    const passwordResetToken = crypto
+  static async generateResetCode(email: string) {
+    const resetCode = this.generateRandomBytes();
+    const resetCodeHash = crypto
       .createHash('sha256')
-      .update(resetToken)
+      .update(String(resetCode))
       .digest('hex');
 
-    await db.oneOrNone(UserQueries.updateUserPasswordResetToken, [
+    await db.oneOrNone(UserQueries.updateUserPasswordResetCode, [
       email,
-      passwordResetToken,
-      Date.now() + 10 * 60 + 1000,
+      resetCodeHash,
+      //expires in 1 minute
+      Date.now() + 60 * 1000,
     ]);
 
-    return resetToken;
+    return resetCode;
+  }
+
+  static async verifyResetCode(email: string, reset_code: string) {
+    const hash_reset_code = crypto
+      .createHash('sha256')
+      .update(reset_code)
+      .digest('hex');
+
+    // const user: IUser | null = await db.oneOrNone(
+    //   UserQueries.getUserByEmailAndResetCode,
+    //   [email, hash_reset_code],
+    // );
+
+    // if (!user) return new ErrorController('Invalid reset token', 401);
+
+    // console.log({ user });
+
+    return db.oneOrNone(UserQueries.getUserByResetCode, [
+      hash_reset_code,
+      Date.now(),
+    ]);
   }
 
   static async resetPassword(email: string, password: string) {
@@ -72,7 +97,7 @@ export class User implements IUser {
     ]);
   }
 
-  static async isExpiredToken(
+  static isExpiredToken(
     password_changed_at: Date | undefined,
     tokenIat: number,
   ) {
@@ -80,5 +105,9 @@ export class User implements IUser {
 
     const changePwdTime = password_changed_at.getTime() / 1000;
     return changePwdTime > tokenIat;
+  }
+
+  static generateRandomBytes() {
+    return Math.floor(100000 + Math.random() * 900000);
   }
 }
