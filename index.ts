@@ -7,6 +7,7 @@ import morgan from 'morgan';
 
 import { dbConnect } from '@/config';
 import { ErrorController } from '@/controllers';
+import { authRouter, usersRouter } from '@/routes';
 
 import 'dotenv/config';
 
@@ -31,6 +32,9 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({ status: 'OK', message: 'working' });
 });
+
+app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/auth', authRouter);
 
 app.all('*', (req, res, next) => {
   const err = new ErrorController(
