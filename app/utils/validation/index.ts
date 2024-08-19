@@ -1,5 +1,14 @@
 import Joi from 'joi';
 
+// type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
+
+enum UserRole {
+  Admin = 'admin',
+  SuperAdmin = 'super_admin',
+  Parent = 'parent',
+  Driver = 'driver',
+}
+
 const boardSchema = Joi.object({
   title: Joi.string().min(1).required(),
 });
@@ -20,8 +29,10 @@ const subTaskSchema = Joi.object({
 });
 
 const signupSchema = Joi.object({
-  username: Joi.string().min(2).required(),
+  first_name: Joi.string().min(2).required(),
+  last_name: Joi.string().min(2).required(),
   email: Joi.string().email().required(),
+  role: Joi.string().valid(...Object.values(UserRole)),
   password: Joi.string()
     .min(12)
     .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
@@ -42,9 +53,22 @@ const sendResetCodeSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
-const verifyResetTokenSchema = Joi.object({
+const changePasswordSchema = Joi.object({
+  current_password: Joi.string().required(),
+  new_password: Joi.string()
+    .min(12)
+    .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
+    .messages({
+      'string.min': 'Password must be at least 12 characters long',
+      'string.pattern.base':
+        'Password must contain at least one capital letter and one symbol.',
+    })
+    .required(),
+});
+
+const verifyResetCodeSchema = Joi.object({
   email: Joi.string().email().required(),
-  reset_token: Joi.string().required(),
+  reset_code: Joi.string().required(),
 });
 
 const resetPasswordSchema = Joi.object({
@@ -68,6 +92,7 @@ export {
   taskSchema,
   subTaskSchema,
   sendResetCodeSchema,
-  verifyResetTokenSchema,
+  verifyResetCodeSchema,
   resetPasswordSchema,
+  changePasswordSchema,
 };

@@ -7,7 +7,7 @@ import { User } from '@/models';
 import { ResponseHelper } from '@/utils';
 import { API_CONSTANTS } from '@/utils';
 
-const COMMUTE_SECRET = process.env.KANBAN_SECRET ?? '';
+const COMMUTE_SECRET = process.env.COMMUTE_SECRET ?? '';
 const { sendResponse } = ResponseHelper;
 
 class AuthMiddleware {
@@ -66,6 +66,7 @@ class AuthMiddleware {
           null,
         );
       }
+      console.log({ decoded });
       req.user = decoded;
     });
 
@@ -79,10 +80,16 @@ class AuthMiddleware {
         null,
       );
 
-    const isExpired = await User.isExpiredToken(
-      user?.password_changed_at,
+    const isExpired = User.isExpiredToken(
       req.user.iat,
+      user.password_changed_at,
     );
+
+    console.log({ isExpired });
+    console.log({
+      userPassChanged: user?.password_changed_at,
+      iat: req.user.iat,
+    });
 
     if (isExpired)
       return sendResponse(

@@ -52,6 +52,9 @@ export class ErrorController extends Error implements IError {
       if (error.code == '23505') {
         error = handleDuplicatekeyError(error);
       }
+      if (error.code == '42703') {
+        error = handleDBError(error);
+      }
       sendErrorProd(error, res);
     }
 
@@ -67,7 +70,7 @@ function sendErrorDev(err: IError, res: Response) {
       stack: err.stack,
     });
   } else {
-    console.error(err);
+    console.log(err);
     return res
       .status(500)
       .json({ status: 'error', message: 'Something went very wrong' });
@@ -87,4 +90,8 @@ function handleInvalidTextRepresentation(err: IError) {
 
 function handleDuplicatekeyError(err: IError) {
   return new ErrorController(err.detail ?? 'Duplicate key error', 400);
+}
+
+function handleDBError(err: IError) {
+  return new ErrorController(err.message, 400);
 }

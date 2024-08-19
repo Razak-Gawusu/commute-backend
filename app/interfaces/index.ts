@@ -10,8 +10,8 @@ export interface IUser {
   role: Role;
   created_at?: string;
   updated_at?: string;
-  password_changed_at?: Date;
-  password_reset_token?: string;
+  password_changed_at?: number;
+  password_reset_code?: string;
   password_reset_expires_at?: Date;
 }
 
