@@ -1,10 +1,13 @@
 import { Request } from 'express';
 
+type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
 export interface IUser {
   id?: string;
-  username: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
+  role: Role;
   created_at?: string;
   updated_at?: string;
   password_changed_at?: Date;
