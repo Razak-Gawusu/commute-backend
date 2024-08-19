@@ -1,7 +1,9 @@
+import argon2 from 'argon2';
 import debugFn from 'debug';
 import { Request, Response } from 'express';
 
-import { IRequest } from '@/interfaces';
+import { IRequest, IUser } from '@/interfaces';
+import { User } from '@/models';
 import { AuthService } from '@/services';
 import { ResponseHelper } from '@/utils';
 
@@ -51,6 +53,26 @@ export class AuthController {
 
     const user = await AuthService.resetPassword(email, password);
     if (!user) sendResponse(res, 400, 'Reset password failed', null);
+
+    sendResponse(res, 200, 'Password updated', user);
+  }
+
+  static async changePassword(req: IRequest, res: Response) {
+    const { new_password, current_password } = req.body;
+
+    const loginUser: IUser | null = await User.getUser(req.user.email);
+
+    const is_valid_password = await argon2.verify(
+      String(loginUser?.password),
+      current_password,
+    );
+
+    if (!is_valid_password)
+      sendResponse(res, 400, 'Invalid current password', null);
+
+    const user = await AuthService.resetPassword(req.user.email, new_password);
+
+    if (!user) sendResponse(res, 400, 'Change password failed', null);
 
     sendResponse(res, 200, 'Password updated', user);
   }

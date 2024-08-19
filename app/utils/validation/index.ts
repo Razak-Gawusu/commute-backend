@@ -53,6 +53,19 @@ const sendResetCodeSchema = Joi.object({
   email: Joi.string().email().required(),
 });
 
+const changePasswordSchema = Joi.object({
+  current_password: Joi.string().required(),
+  new_password: Joi.string()
+    .min(12)
+    .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
+    .messages({
+      'string.min': 'Password must be at least 12 characters long',
+      'string.pattern.base':
+        'Password must contain at least one capital letter and one symbol.',
+    })
+    .required(),
+});
+
 const verifyResetCodeSchema = Joi.object({
   email: Joi.string().email().required(),
   reset_code: Joi.string().required(),
@@ -81,4 +94,5 @@ export {
   sendResetCodeSchema,
   verifyResetCodeSchema,
   resetPasswordSchema,
+  changePasswordSchema,
 };

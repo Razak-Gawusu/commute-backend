@@ -13,7 +13,7 @@ export class User implements IUser {
   email: string;
   password: string;
   role: 'admin' | 'super_admin' | 'parent' | 'driver';
-  password_changed_at?: Date;
+  password_changed_at?: number;
   password_reset_expires_at?: Date;
   password_reset_token?: string;
 
@@ -97,13 +97,10 @@ export class User implements IUser {
     ]);
   }
 
-  static isExpiredToken(
-    password_changed_at: Date | undefined,
-    tokenIat: number,
-  ) {
+  static isExpiredToken(tokenIat: number, password_changed_at?: number) {
     if (!password_changed_at) return false;
 
-    const changePwdTime = password_changed_at.getTime() / 1000;
+    const changePwdTime = Number(password_changed_at) / 1000;
     return changePwdTime > tokenIat;
   }
 

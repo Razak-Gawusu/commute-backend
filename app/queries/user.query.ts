@@ -1,7 +1,7 @@
 export default {
   getUsers: `SELECT * FROM users`,
 
-  getUser: `SELECT id, first_name, last_name, email, password FROM users WHERE email=$1`,
+  getUser: `SELECT * FROM users WHERE email=$1`,
 
   createUser: `
     INSERT INTO 

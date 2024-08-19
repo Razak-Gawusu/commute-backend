@@ -3,6 +3,7 @@ import express from 'express';
 import { AuthController, ErrorController } from '@/controllers';
 import { AuthMiddleware, GenericMiddleware } from '@/middlewares';
 import {
+  changePasswordSchema,
   loginSchema,
   resetPasswordSchema,
   sendResetCodeSchema,
@@ -37,11 +38,18 @@ router.post(
   ErrorController.catchAsync(AuthController.verifyResetCode),
 );
 
-router.post(
+router.patch(
   '/reset-password',
   GenericMiddleware.validateSchema(resetPasswordSchema),
   ErrorController.catchAsync(AuthMiddleware.checkForUser),
   ErrorController.catchAsync(AuthController.resetPassword),
+);
+
+router.patch(
+  '/change-password',
+  GenericMiddleware.validateSchema(changePasswordSchema),
+  ErrorController.catchAsync(AuthMiddleware.authenticate),
+  ErrorController.catchAsync(AuthController.changePassword),
 );
 
 export { router as authRouter };
