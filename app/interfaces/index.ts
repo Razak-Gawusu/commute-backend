@@ -11,7 +11,7 @@ export interface IUser {
   created_at?: string;
   updated_at?: string;
   password_changed_at?: number;
-  password_reset_code?: string;
+  reset_password_code?: string;
   password_reset_expires_at?: Date;
 }
 

@@ -42,6 +42,7 @@ router.patch(
   '/reset-password',
   GenericMiddleware.validateSchema(resetPasswordSchema),
   ErrorController.catchAsync(AuthMiddleware.checkForUser),
+  ErrorController.catchAsync(AuthMiddleware.checkResetCode),
   ErrorController.catchAsync(AuthController.resetPassword),
 );
 
