@@ -45,6 +45,17 @@ class AuthMiddleware {
     next();
   }
 
+  static async checkResetCode(
+    req: IRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    if (!req.user.reset_password_code)
+      return next(new ErrorController('Reset code not verified', 400));
+
+    next();
+  }
+
   static async authenticate(req: IRequest, res: Response, next: NextFunction) {
     let token;
     if (
@@ -66,7 +77,6 @@ class AuthMiddleware {
         );
       }
 
-      console.log({ decoded });
       req.user = decoded;
     });
 

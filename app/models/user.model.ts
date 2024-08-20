@@ -84,8 +84,6 @@ export class User implements IUser {
 
     if (!user) return next(new ErrorController('Invalid reset token', 401));
 
-    console.log({ user });
-
     return db.oneOrNone(UserQueries.getUserByResetCode, [
       hash_reset_code,
       Date.now(),

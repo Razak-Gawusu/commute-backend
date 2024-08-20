@@ -25,7 +25,7 @@ export default {
 
   updatePassword: `
       UPDATE users
-      SET password=$2, password_changed_at=$3
+      SET password=$2, password_changed_at=$3, reset_password_code=null
       WHERE users.email=$1
       RETURNING users.id, users.email
     `,
