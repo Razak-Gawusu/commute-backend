@@ -22,14 +22,14 @@ export class ErrorController extends Error implements IError {
   }
 
   static catchAsync(
-    controller: (
-      req: Request,
-      res: Response,
-      next: NextFunction,
-    ) => Promise<any>,
+    controller: (req: Request, res: Response, next: NextFunction) => any,
   ) {
     return (req: Request, res: Response, next: NextFunction) => {
-      controller(req, res, next).catch(next);
+      try {
+        controller(req, res, next);
+      } catch (error) {
+        next(error);
+      }
     };
   }
 
@@ -63,6 +63,7 @@ export class ErrorController extends Error implements IError {
 }
 
 function sendErrorDev(err: IError, res: Response) {
+  console.log(err);
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       status: err.status,
@@ -70,7 +71,6 @@ function sendErrorDev(err: IError, res: Response) {
       stack: err.stack,
     });
   } else {
-    console.log(err);
     return res
       .status(500)
       .json({ status: 'error', message: 'Something went very wrong' });

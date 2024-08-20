@@ -2,24 +2,24 @@ import argon2 from 'argon2';
 import { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
+import { ErrorController } from '@/controllers';
 import { IRequest } from '@/interfaces';
 import { User } from '@/models';
-import { ResponseHelper } from '@/utils';
 import { API_CONSTANTS } from '@/utils';
 
 const COMMUTE_SECRET = process.env.COMMUTE_SECRET ?? '';
-const { sendResponse } = ResponseHelper;
 
 class AuthMiddleware {
   static async validateLogin(req: IRequest, res: Response, next: NextFunction) {
     const { email, password } = req.body;
     const user = await User.getUser(email);
-    if (!user) return sendResponse(res, 400, 'Invalid login credentials', null);
+    if (!user)
+      return next(new ErrorController('Invalid login credentials', 400));
 
     const is_valid_password = await argon2.verify(user.password, password);
 
     if (!is_valid_password)
-      return sendResponse(res, 400, 'Invalid login credentials', null);
+      return next(new ErrorController('Invalid login credentials', 400));
 
     req.user = user;
     next();
@@ -29,7 +29,7 @@ class AuthMiddleware {
     const { email } = req.body;
 
     const user = await User.getUser(email);
-    if (!user) return sendResponse(res, 400, 'Email does not exist', null);
+    if (!user) return next(new ErrorController('Email does not exist', 400));
 
     req.user = user;
 
@@ -40,7 +40,7 @@ class AuthMiddleware {
     const { email } = req.body;
     const user = await User.getUser(email);
 
-    if (user) return sendResponse(res, 409, 'Email already exits', null);
+    if (user) return next(new ErrorController('Email already exits', 409));
 
     next();
   }
@@ -55,17 +55,17 @@ class AuthMiddleware {
     }
 
     if (!token)
-      return sendResponse(res, 403, API_CONSTANTS.NO_AUTHORISATION_TOKEN, null);
+      return next(
+        new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
+      );
 
     jwt.verify(token, COMMUTE_SECRET, (err, decoded) => {
       if (err) {
-        return sendResponse(
-          res,
-          403,
-          API_CONSTANTS.NO_AUTHORISATION_TOKEN,
-          null,
+        return next(
+          new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
         );
       }
+
       console.log({ decoded });
       req.user = decoded;
     });
@@ -73,11 +73,8 @@ class AuthMiddleware {
     const user = await User.getUser(req.user.email);
 
     if (!user)
-      return sendResponse(
-        res,
-        401,
-        'User with this token no longer exits',
-        null,
+      return next(
+        new ErrorController('User with this token no longer exits', 401),
       );
 
     const isExpired = User.isExpiredToken(
@@ -85,18 +82,12 @@ class AuthMiddleware {
       user.password_changed_at,
     );
 
-    console.log({ isExpired });
-    console.log({
-      userPassChanged: user?.password_changed_at,
-      iat: req.user.iat,
-    });
-
     if (isExpired)
-      return sendResponse(
-        res,
-        401,
-        'user has changed password, please login again',
-        null,
+      return next(
+        new ErrorController(
+          'user has changed password, please login again',
+          401,
+        ),
       );
 
     next();

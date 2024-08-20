@@ -1,3 +1,4 @@
+import { NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import _ from 'lodash';
 
@@ -10,7 +11,7 @@ const SECRET = process.env.COMMUTE_SECRET;
 const JWT_EXPIRES = process.env.COMMUTE_TOKEN_EXPIRES;
 
 export class AuthService {
-  static async signup(data: IUser) {
+  static async signup(data: IUser, next: NextFunction) {
     const { email, password, first_name, last_name, role } = data;
     const user = new User({
       id: GenericHelpers.generateUUID(),
@@ -23,7 +24,7 @@ export class AuthService {
 
     const new_user: IUser = await user.create();
 
-    if (!new_user) return new ErrorController('Error creating user', 401);
+    if (!new_user) return next(new ErrorController('Error creating user', 401));
 
     const token = await AuthService.login(new_user);
 
@@ -32,7 +33,7 @@ export class AuthService {
 
   static async login(user: IUser) {
     const token = jwt.sign(
-      _.pick(user, ['id', 'email', 'username']),
+      _.pick(user, ['id', 'email', 'username', 'role']),
       SECRET ?? '',
       { expiresIn: JWT_EXPIRES },
     );
@@ -43,8 +44,12 @@ export class AuthService {
     return User.generateResetCode(email);
   }
 
-  static async verifyResetCode(email: string, reset_code: string) {
-    return User.verifyResetCode(email, reset_code);
+  static async verifyResetCode(
+    email: string,
+    reset_code: string,
+    next: NextFunction,
+  ) {
+    return User.verifyResetCode(email, reset_code, next);
   }
 
   static async resetPassword(email: string, password: string) {
