@@ -1,8 +1,9 @@
 import argon2 from 'argon2';
 import crypto from 'crypto';
+import { NextFunction } from 'express';
 
 import { db } from '@/config';
-// import { ErrorController } from '@/controllers';
+import { ErrorController } from '@/controllers';
 import { IUser } from '@/interfaces';
 import { UserQueries } from '@/queries';
 
@@ -66,20 +67,24 @@ export class User implements IUser {
     return resetCode;
   }
 
-  static async verifyResetCode(email: string, reset_code: string) {
+  static async verifyResetCode(
+    email: string,
+    reset_code: string,
+    next: NextFunction,
+  ) {
     const hash_reset_code = crypto
       .createHash('sha256')
       .update(reset_code)
       .digest('hex');
 
-    // const user: IUser | null = await db.oneOrNone(
-    //   UserQueries.getUserByEmailAndResetCode,
-    //   [email, hash_reset_code],
-    // );
+    const user: IUser | null = await db.oneOrNone(
+      UserQueries.getUserByEmailAndResetCode,
+      [email, hash_reset_code],
+    );
 
-    // if (!user) return new ErrorController('Invalid reset token', 401);
+    if (!user) return next(new ErrorController('Invalid reset token', 401));
 
-    // console.log({ user });
+    console.log({ user });
 
     return db.oneOrNone(UserQueries.getUserByResetCode, [
       hash_reset_code,

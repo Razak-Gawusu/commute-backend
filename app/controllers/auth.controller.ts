@@ -1,25 +1,29 @@
 import argon2 from 'argon2';
 import debugFn from 'debug';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { IRequest, IUser } from '@/interfaces';
 import { User } from '@/models';
 import { AuthService } from '@/services';
 import { ResponseHelper } from '@/utils';
 
-const { sendResponse } = ResponseHelper;
-const debug = debugFn('kanban:controller');
+import { ErrorController } from './error.controller';
+
+const debug = debugFn('commute:controller');
 
 export class AuthController {
-  static async register(req: Request, res: Response) {
+  static async register(req: Request, res: Response, next: NextFunction) {
     const { first_name, last_name, role, email, password } = req.body;
-    const token = await AuthService.signup({
-      first_name,
-      last_name,
-      role,
-      email,
-      password,
-    });
+    const token = await AuthService.signup(
+      {
+        first_name,
+        last_name,
+        role,
+        email,
+        password,
+      },
+      next,
+    );
 
     return res
       .status(201)
@@ -35,29 +39,40 @@ export class AuthController {
     const { email } = req.body;
     const resetCode = await AuthService.getPasswordResetCode(email);
     debug({ resetCode });
-    sendResponse(res, 200, 'successful', { reset_code: resetCode });
+    ResponseHelper.sendResponse(res, 200, 'successful', {
+      reset_code: resetCode,
+    });
   }
 
-  static async verifyResetCode(req: Request, res: Response) {
+  static async verifyResetCode(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     const { email, reset_code } = req.body;
 
-    const user = await AuthService.verifyResetCode(email, reset_code);
-    if (!user) sendResponse(res, 200, 'Invalid reset code, try again', null);
+    const user = await AuthService.verifyResetCode(email, reset_code, next);
+    if (!user)
+      return next(new ErrorController('Reset code expired, try again', 400));
 
-    sendResponse(res, 200, 'Reset code verified', user);
+    ResponseHelper.sendResponse(res, 200, 'Reset code verified', user);
   }
 
-  static async resetPassword(req: IRequest, res: Response) {
+  static async resetPassword(req: IRequest, res: Response, next: NextFunction) {
     const { password } = req.body;
     const { email } = req.user;
 
     const user = await AuthService.resetPassword(email, password);
-    if (!user) sendResponse(res, 400, 'Reset password failed', null);
+    if (!user) return next(new ErrorController('Reset password failed', 400));
 
-    sendResponse(res, 200, 'Password updated', user);
+    ResponseHelper.sendResponse(res, 200, 'Password updated', user);
   }
 
-  static async changePassword(req: IRequest, res: Response) {
+  static async changePassword(
+    req: IRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
     const { new_password, current_password } = req.body;
 
     const loginUser: IUser | null = await User.getUser(req.user.email);
@@ -68,12 +83,12 @@ export class AuthController {
     );
 
     if (!is_valid_password)
-      sendResponse(res, 400, 'Invalid current password', null);
+      return next(new ErrorController('Invalid current password', 400));
 
     const user = await AuthService.resetPassword(req.user.email, new_password);
 
-    if (!user) sendResponse(res, 400, 'Change password failed', null);
+    if (!user) return next(new ErrorController('Change password failed', 400));
 
-    sendResponse(res, 200, 'Password updated', user);
+    ResponseHelper.sendResponse(res, 200, 'Password updated', user);
   }
 }

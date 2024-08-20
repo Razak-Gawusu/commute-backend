@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
+export type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
 export interface IUser {
   id?: string;
   first_name: string;
