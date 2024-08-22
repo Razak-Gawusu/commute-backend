@@ -3,7 +3,7 @@ import { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { ErrorController } from '@/controllers';
-import { IRequest } from '@/interfaces';
+import { IRequest, Role } from '@/interfaces';
 import { User } from '@/models';
 import { API_CONSTANTS } from '@/utils';
 
@@ -54,6 +54,15 @@ class AuthMiddleware {
       return next(new ErrorController('Reset code not verified', 400));
 
     next();
+  }
+
+  static restrictTo(...roles: Role[]) {
+    return (req: IRequest, res: Response, next: NextFunction) => {
+      if (!roles.includes(req.user.role))
+        return next(new ErrorController('not authorized', 401));
+
+      next();
+    };
   }
 
   static async authenticate(req: IRequest, res: Response, next: NextFunction) {

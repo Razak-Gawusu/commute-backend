@@ -1,6 +1,8 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 import { ResponseHelper } from '@/utils';
+
+// import { ErrorController } from './error.controller';
 
 export class TripController {
   static createTrip(_: Request, res: Response) {
@@ -18,5 +20,12 @@ export class TripController {
   }
   static deleteTrip(_: Request, res: Response) {
     res.json('delete trip');
+  }
+
+  static async checkId(req: Request, res: Response, next: NextFunction) {
+    // const school = await TripService.getOneSchool(req.params.trip_id);
+    // if (!trip) return next(new ErrorController('Trip not found', 400));
+
+    next();
   }
 }

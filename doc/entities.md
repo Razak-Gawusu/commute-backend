@@ -7,6 +7,12 @@ user
 - phone
 - role
 
+Student
+
+- name
+- grade
+- parent_id
+
 Driver
 
 includes(user)

@@ -1,7 +1,12 @@
 import { Request } from 'express';
 
 export type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
-export type TripStatus = 'pending' | 'completed' | 'failed' | 'ongoing';
+export type TripStatus =
+  | 'pending'
+  | 'failed'
+  | 'ongoing'
+  | 'requested'
+  | 'arrived';
 export interface IUser {
   id?: string;
   first_name: string;
