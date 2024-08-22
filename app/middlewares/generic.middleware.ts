@@ -8,9 +8,9 @@ export class GenericMiddleware {
   static validateSchema(schema: Joi.ObjectSchema) {
     return (req: Request, res: Response, next: NextFunction) => {
       const { error } = schema.validate(req.body);
-      if (error) {
+      if (error)
         return next(new ErrorController(error.details[0].message, 400));
-      }
+
       next();
     };
   }

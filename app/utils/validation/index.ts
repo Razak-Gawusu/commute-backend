@@ -83,6 +83,25 @@ const resetPasswordSchema = Joi.object({
     })
     .required(),
 });
+const registerSchoolSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().required(),
+  country: Joi.string().required(),
+  state: Joi.string().required(),
+  city: Joi.string().required(),
+  digital_address: Joi.string().required(),
+  certificate_number: Joi.string().required(),
+  password: Joi.string()
+    .min(12)
+    .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
+    .messages({
+      'string.min': 'Password must be at least 12 characters long',
+      'string.pattern.base':
+        'Password must contain at least one capital letter and one symbol.',
+    })
+    .required(),
+});
 
 export {
   boardSchema,
@@ -93,6 +112,7 @@ export {
   subTaskSchema,
   sendResetCodeSchema,
   verifyResetCodeSchema,
+  registerSchoolSchema,
   resetPasswordSchema,
   changePasswordSchema,
 };

@@ -1,6 +1,7 @@
 import { Request } from 'express';
 
 export type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
+export type TripStatus = 'pending' | 'completed' | 'failed' | 'ongoing';
 export interface IUser {
   id?: string;
   first_name: string;
@@ -8,6 +9,7 @@ export interface IUser {
   email: string;
   password: string;
   role: Role;
+  phone?: string;
   created_at?: string;
   updated_at?: string;
   password_changed_at?: number;
@@ -15,38 +17,28 @@ export interface IUser {
   password_reset_expires_at?: Date;
 }
 
-export interface IBoard {
-  id: string;
-  user_id: string;
-  title: string;
-  created_at?: string;
-  updated_at?: string;
+export interface ISchool {
+  id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  address_id?: string;
+  certificate_number: string;
 }
 
-export interface IColumn {
-  id: string;
-  title: string;
-  board_id: string;
-  created_at?: string;
-  updated_at?: string;
+export interface IAddress {
+  country: string;
+  state: string;
+  city: string;
+  digital_address: string;
 }
 
-export interface ITask {
+export interface ITrip {
   id: string;
-  title: string;
-  description: string;
-  column_id: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface ISubTask {
-  id?: number;
-  title: string;
-  task_id: string;
-  is_completed?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  schoolId: string;
+  parentId: string;
+  status: TripStatus;
 }
 
 export interface IError extends Error {
