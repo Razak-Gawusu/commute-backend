@@ -39,7 +39,7 @@ Parent
 
 includes(user)
 
-- Dashboard 1. summary of trips - profile (name, should, ward details)
+- Dashboard 1. summary of trips - profile (name, school, ward details)
 - trips 1. list of all trips
 - request for a trip 1. list of all drivers (driver details, name, email, phone,
   number of trips, request for trip)

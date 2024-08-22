@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { SchoolService } from '@/services';
+import { AuthService, SchoolService } from '@/services';
 import { ResponseHelper } from '@/utils';
 import apiConstants from '@/utils/constants/api.constants';
 
 import { ErrorController } from './error.controller';
+
+const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD || '12345';
 
 export class SchoolController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -70,6 +72,27 @@ export class SchoolController {
   static async deleteSchool(req: Request, res: Response, next: NextFunction) {
     await SchoolService.deleteSchool(req.params.school_id, next);
     ResponseHelper.sendResponse(res, 200, 'successful', null);
+  }
+
+  static async inviteParent(req: Request, res: Response, next: NextFunction) {
+    const { first_name, last_name, email, phone } = req.body;
+
+    const user = await AuthService.signup(
+      {
+        first_name,
+        last_name,
+        email,
+        phone,
+        password: DEFAULT_PASSWORD,
+        role: 'parent',
+      },
+      next,
+    );
+
+    if (!user)
+      return next(new ErrorController('Error inviting parent, try again', 400));
+
+    ResponseHelper.sendResponse(res, 200, 'send email', { user });
   }
 
   static async checkId(req: Request, res: Response, next: NextFunction) {

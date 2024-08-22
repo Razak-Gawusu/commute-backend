@@ -91,4 +91,17 @@ export class AuthController {
 
     ResponseHelper.sendResponse(res, 200, 'Password updated', user);
   }
+
+  static async createPassword(
+    req: IRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { new_password } = req.body;
+    const user = await AuthService.resetPassword(req.user.email, new_password);
+
+    if (!user) return next(new ErrorController('Change password failed', 400));
+
+    ResponseHelper.sendResponse(res, 200, 'Password updated', user);
+  }
 }

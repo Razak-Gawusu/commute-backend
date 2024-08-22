@@ -9,23 +9,11 @@ enum UserRole {
   Driver = 'driver',
 }
 
-const boardSchema = Joi.object({
-  title: Joi.string().min(1).required(),
-});
-
-const columnSchema = Joi.object({
-  title: Joi.string().min(1).required(),
-});
-
-const taskSchema = Joi.object({
-  column_id: Joi.string(),
-  title: Joi.string().min(1).required(),
-  description: Joi.string().min(1).required(),
-});
-
-const subTaskSchema = Joi.object({
-  title: Joi.string().min(1).required(),
-  is_completed: Joi.boolean(),
+const inviteParentSchema = Joi.object({
+  first_name: Joi.string().min(2).required(),
+  last_name: Joi.string().min(2).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().required(),
 });
 
 const signupSchema = Joi.object({
@@ -55,6 +43,18 @@ const sendResetCodeSchema = Joi.object({
 
 const changePasswordSchema = Joi.object({
   current_password: Joi.string().required(),
+  new_password: Joi.string()
+    .min(12)
+    .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
+    .messages({
+      'string.min': 'Password must be at least 12 characters long',
+      'string.pattern.base':
+        'Password must contain at least one capital letter and one symbol.',
+    })
+    .required(),
+});
+
+const createPasswrdSchema = Joi.object({
   new_password: Joi.string()
     .min(12)
     .regex(/^(?=.*[A-Z])(?=.*\W)[A-Za-z\d\W]+$/)
@@ -104,15 +104,13 @@ const registerSchoolSchema = Joi.object({
 });
 
 export {
-  boardSchema,
   signupSchema,
   loginSchema,
-  columnSchema,
-  taskSchema,
-  subTaskSchema,
+  inviteParentSchema,
   sendResetCodeSchema,
   verifyResetCodeSchema,
   registerSchoolSchema,
   resetPasswordSchema,
   changePasswordSchema,
+  createPasswrdSchema,
 };

@@ -1,8 +1,8 @@
 import express from 'express';
 
 import { ErrorController, SchoolController } from '@/controllers';
-import { GenericMiddleware } from '@/middlewares';
-import { registerSchoolSchema } from '@/utils';
+import { AuthMiddleware, GenericMiddleware } from '@/middlewares';
+import { inviteParentSchema, registerSchoolSchema } from '@/utils';
 const router = express.Router();
 
 router.param('school_id', ErrorController.catchAsync(SchoolController.checkId));
@@ -14,7 +14,9 @@ router
     GenericMiddleware.validateSchema(registerSchoolSchema),
     ErrorController.catchAsync(SchoolController.register),
   );
-router.route('/profile').get(SchoolController.getLoginSchool);
+router
+  .route('/profile')
+  .get(ErrorController.catchAsync(SchoolController.getLoginSchool));
 router
   .route('/:school_id')
   .get(SchoolController.getOneSchool)
@@ -23,6 +25,15 @@ router
     // AuthMiddleware.authenticate,
     // GenericMiddleware.restrictTo('super_admin'),
     SchoolController.deleteSchool,
+  );
+
+router
+  .route('/invite-parent')
+  .post(
+    GenericMiddleware.validateSchema(inviteParentSchema),
+    ErrorController.catchAsync(AuthMiddleware.authenticate),
+    ErrorController.catchAsync(GenericMiddleware.restrictTo('admin')),
+    ErrorController.catchAsync(SchoolController.inviteParent),
   );
 
 export { router as schoolsRouter };

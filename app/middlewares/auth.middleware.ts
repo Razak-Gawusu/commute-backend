@@ -65,6 +65,8 @@ class AuthMiddleware {
       token = req.headers.authorization.split(' ')[1];
     }
 
+    console.log({ token, jwt: COMMUTE_SECRET });
+
     if (!token)
       return next(
         new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
@@ -72,13 +74,16 @@ class AuthMiddleware {
 
     jwt.verify(token, COMMUTE_SECRET, (err, decoded) => {
       if (err) {
-        return next(
-          new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
-        );
+        return next(new ErrorController(err.message, 401));
+      } else {
+        req.user = decoded;
       }
-
-      req.user = decoded;
     });
+
+    if (!req.user)
+      return next(
+        new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 401),
+      );
 
     const user = await User.getUser(req.user.email);
 
