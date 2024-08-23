@@ -47,6 +47,10 @@ export class School implements ISchool {
     return db.oneOrNone(schoolQuery.getOneSchool, [id]);
   }
 
+  static async getOne(id: string): Promise<ISchool | null> {
+    return db.oneOrNone(schoolQuery.getOne, [id]);
+  }
+
   static async deleteSchool(id: string, next: NextFunction) {
     try {
       return db.none(schoolQuery.deleteSchool, [id]);

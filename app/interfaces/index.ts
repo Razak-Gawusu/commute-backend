@@ -40,9 +40,10 @@ export interface IAddress {
 }
 
 export interface ITrip {
-  id: string;
-  schoolId: string;
-  parentId: string;
+  id?: string;
+  school_id: string;
+  driver_id: string;
+  parent_id: string;
   status: TripStatus;
 }
 

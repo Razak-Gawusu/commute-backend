@@ -22,8 +22,8 @@ router
   .get(SchoolController.getOneSchool)
   .patch(SchoolController.editSchool)
   .delete(
-    // AuthMiddleware.authenticate,
-    // GenericMiddleware.restrictTo('super_admin'),
+    ErrorController.catchAsync(AuthMiddleware.authenticate),
+    ErrorController.catchAsync(GenericMiddleware.restrictTo('super_admin')),
     SchoolController.deleteSchool,
   );
 

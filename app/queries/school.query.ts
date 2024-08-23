@@ -5,6 +5,8 @@ export const schoolQuery = {
     VALUES($1, $2, $3, $4, $5, $6, $7)
     RETURNING id, name
   `,
+  getOne: `SELECT * FROM schools WHERE id=$1`,
+
   getSchools: `
     SELECT id, name, email, phone, address_id, certificate_number
     FROM schools

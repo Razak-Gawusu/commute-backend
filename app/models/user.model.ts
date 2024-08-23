@@ -46,6 +46,11 @@ export class User implements IUser {
   static async getUser(email: string): Promise<IUser | null> {
     return db.oneOrNone(UserQueries.getUser, [email]);
   }
+
+  static async getOne(id: string): Promise<IUser | null> {
+    return db.oneOrNone(UserQueries.getOne, [id]);
+  }
+
   static async deleteUser(email: string) {
     return db.none(UserQueries.deleteUser, [email]);
   }

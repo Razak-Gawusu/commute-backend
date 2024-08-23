@@ -1,5 +1,7 @@
 import Joi from 'joi';
 
+export * from './trip';
+
 // type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
 
 enum UserRole {
