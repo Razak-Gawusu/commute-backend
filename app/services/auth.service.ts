@@ -12,14 +12,9 @@ const JWT_EXPIRES = process.env.COMMUTE_TOKEN_EXPIRES;
 
 export class AuthService {
   static async signup(data: IUser, next: NextFunction) {
-    const { email, password, first_name, last_name, role } = data;
     const user = new User({
+      ...data,
       id: GenericHelpers.generateUUID(),
-      first_name,
-      last_name,
-      role,
-      email,
-      password,
     });
 
     const new_user: IUser = await user.create();
@@ -33,7 +28,7 @@ export class AuthService {
 
   static async login(user: IUser) {
     const token = jwt.sign(
-      _.pick(user, ['id', 'email', 'username', 'role']),
+      _.pick(user, ['id', 'email', 'username', 'role', 'school_id']),
       SECRET ?? '',
       { expiresIn: JWT_EXPIRES },
     );

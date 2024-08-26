@@ -4,6 +4,7 @@ import { AuthController, ErrorController } from '@/controllers';
 import { AuthMiddleware, GenericMiddleware } from '@/middlewares';
 import {
   changePasswordSchema,
+  createPasswrdSchema,
   loginSchema,
   resetPasswordSchema,
   sendResetCodeSchema,
@@ -48,9 +49,20 @@ router.patch(
 
 router.patch(
   '/change-password',
-  GenericMiddleware.validateSchema(changePasswordSchema),
+  ErrorController.catchAsync(
+    GenericMiddleware.validateSchema(changePasswordSchema),
+  ),
   ErrorController.catchAsync(AuthMiddleware.authenticate),
   ErrorController.catchAsync(AuthController.changePassword),
+);
+
+router.post(
+  '/create-password',
+  ErrorController.catchAsync(
+    GenericMiddleware.validateSchema(createPasswrdSchema),
+  ),
+  ErrorController.catchAsync(AuthMiddleware.authenticate),
+  ErrorController.catchAsync(AuthController.createPassword),
 );
 
 export { router as authRouter };

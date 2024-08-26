@@ -3,7 +3,7 @@ import { NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { ErrorController } from '@/controllers';
-import { IRequest } from '@/interfaces';
+import { IRequest, Role } from '@/interfaces';
 import { User } from '@/models';
 import { API_CONSTANTS } from '@/utils';
 
@@ -56,6 +56,15 @@ class AuthMiddleware {
     next();
   }
 
+  static restrictTo(...roles: Role[]) {
+    return (req: IRequest, res: Response, next: NextFunction) => {
+      if (!roles.includes(req.user.role))
+        return next(new ErrorController('not authorized', 401));
+
+      next();
+    };
+  }
+
   static async authenticate(req: IRequest, res: Response, next: NextFunction) {
     let token;
     if (
@@ -65,6 +74,8 @@ class AuthMiddleware {
       token = req.headers.authorization.split(' ')[1];
     }
 
+    console.log({ token });
+
     if (!token)
       return next(
         new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
@@ -72,13 +83,16 @@ class AuthMiddleware {
 
     jwt.verify(token, COMMUTE_SECRET, (err, decoded) => {
       if (err) {
-        return next(
-          new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 403),
-        );
+        return next(new ErrorController(err.message, 401));
+      } else {
+        req.user = decoded;
       }
-
-      req.user = decoded;
     });
+
+    if (!req.user)
+      return next(
+        new ErrorController(API_CONSTANTS.NO_AUTHORISATION_TOKEN, 401),
+      );
 
     const user = await User.getUser(req.user.email);
 

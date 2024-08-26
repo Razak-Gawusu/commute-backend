@@ -7,7 +7,8 @@ import morgan from 'morgan';
 
 import { dbConnect } from '@/config';
 import { ErrorController } from '@/controllers';
-import { authRouter, usersRouter } from '@/routes';
+import { authRouter, tripRouters, usersRouter } from '@/routes';
+import { schoolsRouter } from '@/routes/school.routes';
 
 import 'dotenv/config';
 
@@ -35,6 +36,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/trips', tripRouters);
+app.use('/api/v1/schools', schoolsRouter);
 
 app.all('*', (req, res, next) => {
   const err = new ErrorController(

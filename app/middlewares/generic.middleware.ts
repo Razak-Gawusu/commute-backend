@@ -8,9 +8,22 @@ export class GenericMiddleware {
   static validateSchema(schema: Joi.ObjectSchema) {
     return (req: Request, res: Response, next: NextFunction) => {
       const { error } = schema.validate(req.body);
-      if (error) {
+      if (error)
         return next(new ErrorController(error.details[0].message, 400));
-      }
+
+      next();
+    };
+  }
+
+  static checkResource(id: string, Model: any) {
+    // id structure resource_id
+    const resource = `${id.split('_')[0]}`;
+
+    return async (req: IRequest, res: Response, next: NextFunction) => {
+      const model = await Model.getOne(req.params[id] || req.body[id]);
+      if (!model)
+        return next(new ErrorController(`${resource} not found`, 404));
+
       next();
     };
   }

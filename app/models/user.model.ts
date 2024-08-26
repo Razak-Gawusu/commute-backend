@@ -17,6 +17,7 @@ export class User implements IUser {
   password_changed_at?: number;
   password_reset_expires_at?: Date;
   password_reset_token?: string;
+  school_id?: string;
 
   constructor(user: IUser) {
     this.id = user.id;
@@ -25,6 +26,7 @@ export class User implements IUser {
     this.role = user.role;
     this.email = user.email;
     this.password = user.password;
+    this.school_id = user.school_id;
   }
 
   async create() {
@@ -36,6 +38,7 @@ export class User implements IUser {
       this.email,
       hash_password,
       this.role,
+      this.school_id,
     ]);
   }
 
@@ -46,6 +49,11 @@ export class User implements IUser {
   static async getUser(email: string): Promise<IUser | null> {
     return db.oneOrNone(UserQueries.getUser, [email]);
   }
+
+  static async getOne(id: string): Promise<IUser | null> {
+    return db.oneOrNone(UserQueries.getOne, [id]);
+  }
+
   static async deleteUser(email: string) {
     return db.none(UserQueries.deleteUser, [email]);
   }
