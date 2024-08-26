@@ -28,7 +28,7 @@ export class AuthService {
 
   static async login(user: IUser) {
     const token = jwt.sign(
-      _.pick(user, ['id', 'email', 'username', 'role']),
+      _.pick(user, ['id', 'email', 'username', 'role', 'school_id']),
       SECRET ?? '',
       { expiresIn: JWT_EXPIRES },
     );

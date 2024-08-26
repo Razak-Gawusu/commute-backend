@@ -20,6 +20,7 @@ export interface IUser {
   password_changed_at?: number;
   reset_password_code?: string;
   password_reset_expires_at?: Date;
+  school_id?: string;
 }
 
 export interface ISchool {
@@ -30,6 +31,7 @@ export interface ISchool {
   password: string;
   address_id?: string;
   certificate_number: string;
+  owner_id: string;
 }
 
 export interface IAddress {

@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { IRequest } from '@/interfaces';
+import { School } from '@/models';
 import { AuthService, SchoolService } from '@/services';
 import { ResponseHelper } from '@/utils';
 import apiConstants from '@/utils/constants/api.constants';
@@ -9,7 +11,7 @@ import { ErrorController } from './error.controller';
 const DEFAULT_PASSWORD = process.env.DEFAULT_PASSWORD || '12345';
 
 export class SchoolController {
-  static async register(req: Request, res: Response, next: NextFunction) {
+  static async register(req: IRequest, res: Response, next: NextFunction) {
     const {
       name,
       email,
@@ -28,6 +30,7 @@ export class SchoolController {
         phone,
         password,
         certificate_number,
+        owner_id: req.user.id,
       },
       { country, state, city, digital_address },
       next,
@@ -74,8 +77,9 @@ export class SchoolController {
     ResponseHelper.sendResponse(res, 200, 'successful', null);
   }
 
-  static async inviteParent(req: Request, res: Response, next: NextFunction) {
+  static async inviteParent(req: IRequest, res: Response, next: NextFunction) {
     const { first_name, last_name, email, phone } = req.body;
+    const school = await School.getOneByOwnerId(req.user.id);
 
     const user = await AuthService.signup(
       {
@@ -85,6 +89,7 @@ export class SchoolController {
         phone,
         password: DEFAULT_PASSWORD,
         role: 'parent',
+        school_id: school?.id,
       },
       next,
     );

@@ -11,7 +11,9 @@ router
   .route('/')
   .get(SchoolController.getSchools)
   .post(
+    AuthMiddleware.authenticate,
     GenericMiddleware.validateSchema(registerSchoolSchema),
+    GenericMiddleware.restrictTo('admin'),
     ErrorController.catchAsync(SchoolController.register),
   );
 router
@@ -31,8 +33,9 @@ router
   .route('/invite-parent')
   .post(
     GenericMiddleware.validateSchema(inviteParentSchema),
-    ErrorController.catchAsync(AuthMiddleware.authenticate),
-    ErrorController.catchAsync(GenericMiddleware.restrictTo('admin')),
+    AuthMiddleware.authenticate,
+    GenericMiddleware.restrictTo('admin'),
+    AuthMiddleware.userExists,
     ErrorController.catchAsync(SchoolController.inviteParent),
   );
 

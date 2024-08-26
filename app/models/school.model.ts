@@ -14,6 +14,7 @@ export class School implements ISchool {
   password: string;
   address_id?: string;
   certificate_number: string;
+  owner_id: string;
 
   constructor(school: ISchool) {
     this.id = school.id;
@@ -23,6 +24,7 @@ export class School implements ISchool {
     this.password = school.password;
     this.address_id = school.address_id;
     this.certificate_number = school.certificate_number;
+    this.owner_id = school.owner_id;
   }
 
   async register() {
@@ -36,6 +38,7 @@ export class School implements ISchool {
       hash_password,
       this.address_id,
       this.certificate_number,
+      this.owner_id,
     ]);
   }
 
@@ -49,6 +52,9 @@ export class School implements ISchool {
 
   static async getOne(id: string): Promise<ISchool | null> {
     return db.oneOrNone(schoolQuery.getOne, [id]);
+  }
+  static async getOneByOwnerId(id: string): Promise<ISchool | null> {
+    return db.oneOrNone(schoolQuery.getOneByOwnerId, [id]);
   }
 
   static async deleteSchool(id: string, next: NextFunction) {

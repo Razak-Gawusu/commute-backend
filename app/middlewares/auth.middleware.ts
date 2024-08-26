@@ -74,7 +74,7 @@ class AuthMiddleware {
       token = req.headers.authorization.split(' ')[1];
     }
 
-    console.log({ token, jwt: COMMUTE_SECRET });
+    console.log({ token });
 
     if (!token)
       return next(

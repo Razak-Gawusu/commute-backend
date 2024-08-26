@@ -8,7 +8,15 @@ export const tripQuery = {
   getOne: `SELECT * FROM trips WHERE id=$1`,
 
   getTrips: `
-    SELECT * FROM trips
+    SELECT 
+    t.*,
+    s.name AS school_name,
+    CONCAT(p.first_name, ' ', p.last_name) AS parent_name,
+    CONCAT(d.first_name, ' ', d.last_name) AS driver_name
+    FROM trips t
+    INNER JOIN schools s ON t.school_id = s.id
+    INNER JOIN users p ON t.parent_id = p.id
+    INNER JOIN users d ON t.driver_id = d.id;
   `,
 
   getOneTrip: `

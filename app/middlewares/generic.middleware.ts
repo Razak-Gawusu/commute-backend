@@ -15,6 +15,19 @@ export class GenericMiddleware {
     };
   }
 
+  static checkResource(id: string, Model: any) {
+    // id structure resource_id
+    const resource = `${id.split('_')[0]}`;
+
+    return async (req: IRequest, res: Response, next: NextFunction) => {
+      const model = await Model.getOne(req.params[id] || req.body[id]);
+      if (!model)
+        return next(new ErrorController(`${resource} not found`, 404));
+
+      next();
+    };
+  }
+
   static restrictTo(...roles: Role[]) {
     return (req: IRequest, res: Response, next: NextFunction) => {
       if (!roles.includes(req.user.role))
