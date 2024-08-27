@@ -3,7 +3,7 @@ import { NextFunction } from 'express';
 
 import { db } from '@/config';
 import { ErrorController } from '@/controllers';
-import { ISchool } from '@/interfaces';
+import { ISchool, IStudent } from '@/interfaces';
 import { schoolQuery } from '@/queries';
 
 export class School implements ISchool {
@@ -44,6 +44,14 @@ export class School implements ISchool {
 
   static async getSchools() {
     return db.manyOrNone(schoolQuery.getSchools);
+  }
+
+  static async addWardToParent(ward: IStudent) {
+    return db.oneOrNone(schoolQuery.addWard, [
+      ward.id,
+      ward.name,
+      ward.parent_id,
+    ]);
   }
 
   static async getOneSchool(id: string): Promise<ISchool | null> {

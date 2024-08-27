@@ -1,6 +1,7 @@
 import Joi from 'joi';
 
 export * from './trip';
+export * from './school';
 
 // type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
 

@@ -2,7 +2,7 @@ import { NextFunction } from 'express';
 
 import { db } from '@/config';
 import { ErrorController } from '@/controllers';
-import { IAddress, ISchool } from '@/interfaces';
+import { IAddress, ISchool, IStudent } from '@/interfaces';
 import { School } from '@/models';
 import { addressQuery } from '@/queries';
 import { GenericHelpers } from '@/utils';
@@ -46,5 +46,13 @@ export class SchoolService {
 
   static async deleteSchool(id: string, next: NextFunction) {
     return School.deleteSchool(id, next);
+  }
+
+  static async addWardToParent(ward: IStudent) {
+    return School.addWardToParent({
+      id: GenericHelpers.generateUUID(),
+      name: ward.name,
+      parent_id: ward.parent_id,
+    });
   }
 }

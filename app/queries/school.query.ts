@@ -24,4 +24,11 @@ export const schoolQuery = {
     DELETE FROM schools
     WHERE id=$1
   `,
+
+  addWard: `
+    INSERT INTO
+    students(id, name, parent_id)
+    VALUES($1,$2,$3)
+    RETURNING id,name,parent_id
+  `,
 };
