@@ -1,4 +1,4 @@
-import { ITrip } from '@/interfaces';
+import { ITrip, TripStatus } from '@/interfaces';
 import { Trip } from '@/models/trip.model';
 import { GenericHelpers } from '@/utils';
 
@@ -10,6 +10,10 @@ export class TripService {
     });
 
     return new_trip.createTrip();
+  }
+
+  static async changeTripStatus(id: string, status: TripStatus) {
+    return Trip.changeTripStatus(id, status);
   }
 
   static async fetchTrips() {

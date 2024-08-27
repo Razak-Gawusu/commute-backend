@@ -22,34 +22,10 @@ export class TripController {
     ResponseHelper.sendResponse(res, 200, 'all trips', { trip });
   }
 
-  static editTrip(_: Request, res: Response) {
-    res.json('edit trip');
-  }
-
   static async deleteTrip(req: Request, res: Response) {
     await TripService.deleteTrip(req.params.trip_id);
 
     ResponseHelper.sendResponse(res, 200, 'successful', null);
-  }
-
-  static async checkId(req: Request, res: Response, next: NextFunction) {
-    const trip = await TripService.fetchOneTrip(req.params.trip_id);
-    if (!trip) return next(new ErrorController('Trip not found', 400));
-
-    next();
-  }
-
-  static checkV3(id: string, Model: any) {
-    // id structure resource_id
-    const resource = `${id.split('_')[0]}`;
-
-    return async (req: IRequest, res: Response, next: NextFunction) => {
-      const model = await Model.getOne(req.params[id] || req.body[id]);
-      if (!model)
-        return next(new ErrorController(`${resource} not found`, 404));
-
-      next();
-    };
   }
 
   static async requestTrip(req: IRequest, res: Response, next: NextFunction) {
@@ -81,19 +57,20 @@ export class TripController {
     ResponseHelper.sendResponse(res, 200, 'successful', { trip });
   }
 
-  static acceptTrip(req: Request, res: Response) {
-    res.json('accept trip');
-  }
+  static async changeTripStatus(
+    req: IRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const { status } = req.body;
 
-  static startTrip(req: Request, res: Response) {
-    res.json('start trip');
-  }
+    const trip = await TripService.changeTripStatus(req.params.trip_id, status);
 
-  static endTrip(req: Request, res: Response) {
-    res.json('end trip');
-  }
+    if (!trip)
+      return next(
+        new ErrorController('Trip status change failed try again', 400),
+      );
 
-  static confirmTrip(req: Request, res: Response) {
-    res.json('confirm trip');
+    ResponseHelper.sendResponse(res, 200, 'successful', { trip });
   }
 }

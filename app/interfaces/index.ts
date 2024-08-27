@@ -1,11 +1,13 @@
 import { Request } from 'express';
 
 export type Role = 'admin' | 'super_admin' | 'parent' | 'driver';
+
 export type TripStatus =
-  | 'pending'
-  | 'failed'
   | 'ongoing'
   | 'requested'
+  | 'accepted'
+  | 'rejected'
+  | 'completed'
   | 'arrived';
 export interface IUser {
   id?: string;
@@ -59,4 +61,5 @@ export interface IError extends Error {
 
 export interface IRequest extends Request {
   user?: IUser | any;
+  resource?: any;
 }
