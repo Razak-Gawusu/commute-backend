@@ -16,7 +16,7 @@ const environment = {
   development: Object.assign(development, defaults),
   test: Object.assign(test, defaults),
   production: Object.assign(production, defaults),
-}[process.env.KREDIT_NODE_ENV || 'development'];
+}[process.env.COMMUTE_NODE_ENV || 'development'];
 
 const mergedConfig: EnvironmentConfig = { ...process.env, ...environment };
 
