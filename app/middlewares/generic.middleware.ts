@@ -20,11 +20,13 @@ export class GenericMiddleware {
     const resource = `${id.split('_')[0]}`;
 
     return async (req: IRequest, res: Response, next: NextFunction) => {
-      const model = await Model.getOne(req.params[id] || req.body[id]);
-      if (!model)
-        return next(new ErrorController(`${resource} not found`, 404));
+      try {
+        const model = await Model.getOne(req.params[id] || req.body[id]);
 
-      req.resource = model;
+        req.resource = model;
+      } catch (error) {
+        return next(new ErrorController(`${resource} not found`, 404));
+      }
 
       next();
     };

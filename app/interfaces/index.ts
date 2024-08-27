@@ -43,6 +43,12 @@ export interface IAddress {
   digital_address: string;
 }
 
+export interface IStudent {
+  id?: string;
+  name: string;
+  parent_id: string;
+}
+
 export interface ITrip {
   id?: string;
   school_id: string;

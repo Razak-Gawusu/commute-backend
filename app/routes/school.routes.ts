@@ -2,10 +2,16 @@ import express from 'express';
 
 import { ErrorController, SchoolController } from '@/controllers';
 import { AuthMiddleware, GenericMiddleware } from '@/middlewares';
-import { inviteParentSchema, registerSchoolSchema } from '@/utils';
+import { School, User } from '@/models';
+import {
+  addWardToParentSchema,
+  inviteParentSchema,
+  registerSchoolSchema,
+} from '@/utils';
 const router = express.Router();
 
-router.param('school_id', ErrorController.catchAsync(SchoolController.checkId));
+router.param('school_id', GenericMiddleware.checkResource('school_id', School));
+router.param('parent_id', GenericMiddleware.checkResource('parent_id', User));
 
 router
   .route('/')
@@ -37,6 +43,15 @@ router
     GenericMiddleware.restrictTo('admin'),
     AuthMiddleware.userExists,
     ErrorController.catchAsync(SchoolController.inviteParent),
+  );
+
+router
+  .route('/:parent_id/add-ward')
+  .post(
+    GenericMiddleware.validateSchema(addWardToParentSchema),
+    AuthMiddleware.authenticate,
+    GenericMiddleware.restrictTo('admin'),
+    ErrorController.catchAsync(SchoolController.addWardToParent),
   );
 
 export { router as schoolsRouter };

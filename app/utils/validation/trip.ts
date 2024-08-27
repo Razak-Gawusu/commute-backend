@@ -14,7 +14,9 @@ const requestTripSchema = Joi.object({
 });
 
 const changeTripStatus = Joi.object({
-  status: Joi.string().valid(...Object.values(TripStatusEnum)),
+  status: Joi.string()
+    .valid(...Object.values(TripStatusEnum))
+    .required(),
 });
 
 export { requestTripSchema, changeTripStatus };
