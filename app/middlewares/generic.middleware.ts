@@ -24,6 +24,8 @@ export class GenericMiddleware {
       if (!model)
         return next(new ErrorController(`${resource} not found`, 404));
 
+      req.resource = model;
+
       next();
     };
   }

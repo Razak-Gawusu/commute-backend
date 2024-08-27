@@ -7,6 +7,13 @@ export const tripQuery = {
 
   getOne: `SELECT * FROM trips WHERE id=$1`,
 
+  changeTripStatus: `
+    UPDATE trips
+    SET status=$2
+    WHERE id=$1
+    RETURNING trips.id, trips.status
+  `,
+
   getTrips: `
     SELECT 
     t.*,

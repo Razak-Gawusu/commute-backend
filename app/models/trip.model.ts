@@ -34,6 +34,9 @@ export class Trip implements ITrip {
   static async getOneTrip(id: string) {
     return db.oneOrNone(tripQuery.getOneTrip, [id]);
   }
+  static async changeTripStatus(id: string, status: TripStatus) {
+    return db.oneOrNone(tripQuery.changeTripStatus, [id, status]);
+  }
 
   static async getOne(id: string): Promise<ITrip | null> {
     return db.oneOrNone(tripQuery.getOne, [id]);

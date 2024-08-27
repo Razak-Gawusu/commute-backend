@@ -1,7 +1,20 @@
 import Joi from 'joi';
 
+enum TripStatusEnum {
+  ONGOING = 'ongoing',
+  REQUESTED = 'requested',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  COMPLETED = 'completed',
+  ARRIVED = 'arrived',
+}
+
 const requestTripSchema = Joi.object({
   parent_id: Joi.string(),
 });
 
-export { requestTripSchema };
+const changeTripStatus = Joi.object({
+  status: Joi.string().valid(...Object.values(TripStatusEnum)),
+});
+
+export { requestTripSchema, changeTripStatus };
