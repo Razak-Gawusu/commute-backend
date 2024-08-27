@@ -108,7 +108,9 @@ export class SchoolController {
     const { parent_id } = req.params;
     const { name } = req.body;
 
-    const ward = await School.addWardToParent({ name, parent_id });
+    console.log({ parent_id, name });
+
+    const ward = await SchoolService.addWardToParent({ name, parent_id });
 
     if (!ward)
       return next(
