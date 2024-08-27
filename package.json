@@ -12,13 +12,14 @@
     "build": "rimraf ./build && tsc",
     "dev:start": "DEBUG=commute:* npx nodemon",
     "prod:start": "NODE_ENV=production npx nodemon",
-    "start": "npm run build && node build/index.js",
+    "start": "npm run migrate:up && npm run build && node build/index.js",
     "lint": "eslint . --ext .ts",
     "migrate": "db-migrate --migrations-dir ./migrations",
     "migrate:up": "npm run migrate up",
     "migrate:down": "npm run migrate down",
     "migrate:reset": "npm run migrate reset",
     "migrate:create": "npm run migrate create"
+    
   },
   "keywords": [],
   "author": "",
